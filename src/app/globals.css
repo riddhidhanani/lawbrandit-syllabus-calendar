@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------- Tokens ------- */
+:root{
+  --ink: #0b1020;           /* deep slate */
+  --muted: #e2e8f0;         /* light slate on dark */
+  --line: rgba(255,255,255,0.2);
+
+  --brand: #145ea8;         /* azure/navy mix */
+  --accent: #f59e0b;        /* amber */
+
+  /* badge tints for dark bg (translucent) */
+  --reading-bg: rgba(99,102,241,.18);   /* indigo */
+  --reading-br: rgba(129,140,248,.35);
+  --reading-fg: #e0e7ff;
+
+  --assign-bg: rgba(251,191,36,.18);    /* amber */
+  --assign-br: rgba(251,191,36,.35);
+  --assign-fg: #fde68a;
+
+  --exam-bg: rgba(244,63,94,.18);       /* rose */
+  --exam-br: rgba(244,63,94,.35);
+  --exam-fg: #fecdd3;
+
+  --other-bg: rgba(148,163,184,.18);    /* slate */
+  --other-br: rgba(148,163,184,.35);
+  --other-fg: #e2e8f0;
+}
+
+/* ------- Lighter colorful gradient + subtle grain ------- */
+html, body{
+  min-height:100%;
+  background:
+    radial-gradient(1100px 700px at 10% 0%, rgba(34,211,238,.35), transparent 70%),  /* cyan */
+    radial-gradient(900px 650px at 85% 10%, rgba(168,85,247,.30), transparent 70%),  /* violet */
+    radial-gradient(800px 500px at 25% 100%, rgba(16,185,129,.28), transparent 70%),/* emerald */
+    linear-gradient(135deg, #0e1a33 0%, #162b59 40%, #48236b 100%);                 /* base */
+  color: var(--muted);
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' opacity='0.04' width='1200' height='1200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect filter='url(%23n)' width='1200' height='1200'/%3E%3C/svg%3E");
+}
+
+@layer base{
+  h1{ @apply text-3xl md:text-4xl font-extrabold tracking-tight text-white; }
+  h2{ @apply text-xl font-semibold text-white; }
+}
+/* Glass cards (brighter & high-contrast text) */
+.card{
+  @apply rounded-2xl p-5 border shadow-xl;
+  background: rgba(255,255,255,0.18);   /* a bit brighter than before */
+  border-color: var(--line);
+  backdrop-filter: blur(16px);
+  color: #f8fafc;                       /* <-- force readable text inside cards */
+}
+
+/* Timeline contrast */
+.timeline:before{ content:""; @apply absolute left-[9px] top-0 bottom-0 w-0.5 bg-white/35; }
+.dot{ @apply absolute left-0 top-2.5 size-2.5 rounded-full bg-cyan-200; }
+
+
+/* ------- Buttons ------- */
+.btn{ @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium border transition; color:#f8fafc; }
+.btn:hover{ @apply brightness-110; }
+.btn-primary{
+  position:relative; border:0; color:white;
+  background: linear-gradient(135deg, #22d3ee, #818cf8, #e879f9);
+}
+.btn-primary:after{
+  content:""; position:absolute; inset:-2px; z-index:-1; border-radius:inherit;
+  background:conic-gradient(from 180deg, #22d3ee, #818cf8, #e879f9, #22d3ee);
+  filter: blur(10px); opacity:.35;         /* softer glow */
+}
+
+/* ------- Inputs / selects on dark ------- */
+.input, .select{
+  @apply w-full rounded-lg px-3 py-2.5 outline-none text-[15px];
+  background:rgba(255,255,255,0.12);
+  border:1px solid var(--line);
+  color:#f8fafc;
+  color-scheme: dark;                       /* dark dropdowns & date pickers */
+}
+.input::placeholder{ color:rgba(255,255,255,0.65); }
+.select{ background-image:none; }
+
+.textarea{
+  @apply w-full rounded-lg px-3 py-2.5 outline-none text-[15px];
+  background:rgba(255,255,255,0.12);
+  border:1px solid var(--line);
+  color:#f8fafc;
+  color-scheme: dark;
+  resize: vertical;
+  min-height: 44px;
+  line-height: 1.35;
+}
+
+
+
+/* row card for editor */
+.rowcard {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 12px;
+  padding: 10px;
+  transition: background .15s ease, border-color .15s ease;
+}
+.rowcard:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.28);
+}
+
+/* ------- Table ------- */
+.table{ @apply w-full text-[15px] text-slate-100; }
+.table th{ @apply text-left border-b border-[color:var(--line)] pb-2 text-slate-200; }
+.table td{ @apply py-2 align-middle border-b border-[color:var(--line)]; }
+
+/* ------- Badges (no white pills) ------- */
+.badge{ @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border; }
+.badge-reading  { background:var(--reading-bg);  border-color:var(--reading-br);  color:var(--reading-fg); }
+.badge-assign   { background:var(--assign-bg);   border-color:var(--assign-br);   color:var(--assign-fg); }
+.badge-exam     { background:var(--exam-bg);     border-color:var(--exam-br);     color:var(--exam-fg); }
+.badge-other    { background:var(--other-bg);    border-color:var(--other-br);    color:var(--other-fg); }
+
+/* ------- Timeline ------- */
+.timeline{ @apply relative pl-5; }
+.timeline:before{ content:""; @apply absolute left-[9px] top-0 bottom-0 w-0.5 bg-white/25; }
+.dot{ @apply absolute left-0 top-2.5 size-2.5 rounded-full bg-cyan-300; }
