@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// pdf-parse has no types; ignore TS for this import if needed
-// @ts-ignore
-import pdfParse from "pdf-parse";
+// NOTE: pdf-parse is intentionally not imported here.  The `pdf-parse` library
+// attempts to read a test PDF file at build time which causes Vercel’s
+// serverless bundler to throw an ENOENT error (see deployment logs).
+// To keep the application deployable, we handle PDF uploads gracefully
+// without relying on pdf-parse.  If needed, consider using an
+// alternative library such as `pdfjs-dist` or implement parsing on the
+// client side.
 import mammoth from "mammoth";
 import { extractFromPlainText, extractFromDocxHTML } from "@/lib/parser";
 
@@ -47,10 +51,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (kind === "pdf") {
-      const data = await (pdfParse as any)(buf);
-      const text = (data.text || "").toString();
-      const items = extractFromPlainText(text, tz);
-      return NextResponse.json({ items });
+      // PDF parsing is currently disabled on the server to avoid build errors.
+      // Return an error message to the client so the UI can handle it gracefully.
+      return NextResponse.json(
+        { error: "PDF parsing is not supported in this deployment. Please upload a DOCX or TXT file." },
+        { status: 415 }
+      );
     }
 
     // txt / unknown → treat as UTF-8 text
