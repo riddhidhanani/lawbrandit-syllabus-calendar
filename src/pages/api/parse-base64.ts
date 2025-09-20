@@ -1,7 +1,11 @@
 // Pages API: robust on Windows; parses DOCX tables and PDF/TXT text
 import type { NextApiRequest, NextApiResponse } from "next";
-// @ts-ignore - pdf-parse has no types
-import pdfParse from "pdf-parse";
+// NOTE: pdf-parse is intentionally not imported here.  The `pdf-parse` library
+// attempts to read a test PDF file at build time which causes Vercel’s
+// serverless bundler to throw an ENOENT error (see deployment logs).  To keep
+// the application deployable, we handle PDF uploads gracefully without
+// relying on pdf-parse.  Consider using an alternative like `pdfjs-dist` or
+// implement parsing on the client side instead.
 import mammoth from "mammoth";
 import { extractFromPlainText, extractFromDocxHTML } from "@/lib/parser";
 
@@ -38,12 +42,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ items });
     }
 
-    // PDF: text extraction
+    // PDF: parsing disabled on server — return error so the client can handle it
     if (isPdf) {
-      const data = await (pdfParse as any)(buf);
-      const text = (data.text || "").toString();
-      const items = extractFromPlainText(text, tz);
-      return res.status(200).json({ items });
+      return res.status(415).json({ error: "PDF parsing is not supported in this deployment. Please upload a DOCX or TXT file." });
     }
 
     // Fallback treat as UTF-8 text
